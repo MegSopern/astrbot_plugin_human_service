@@ -1,4 +1,5 @@
 import re
+
 from astrbot.api.event import filter
 from astrbot.api.star import Context, Star, register
 from astrbot.core.config.astrbot_config import AstrBotConfig
@@ -13,7 +14,7 @@ from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import (
     "astrbot_plugin_human_service",
     "Zhalslar",
     "人工客服插件",
-    "1.0.4",
+    "1.0.41",
     "https://github.com/Zhalslar/astrbot_plugin_human_service",
 )
 class HumanServicePlugin(Star):
