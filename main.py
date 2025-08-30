@@ -14,7 +14,7 @@ from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import (
     "astrbot_plugin_human_service",
     "Zhalslar",
     "人工客服插件",
-    "1.0.41",
+    "1.0.4",
     "https://github.com/Zhalslar/astrbot_plugin_human_service",
 )
 class HumanServicePlugin(Star):
@@ -43,7 +43,9 @@ class HumanServicePlugin(Star):
             "status": "waiting",
             "group_id": group_id,
         }
-        yield event.plain_result("正在等待客服👤接入...")
+        yield event.plain_result(
+            "正在等待超级管理员👤接入...\n(注意：恶意转人工将会被拉黑)"
+        )
         for servicer_id in self.servicers_id:
             await self.send(
                 event,
@@ -71,6 +73,7 @@ class HumanServicePlugin(Star):
         self, event: AiocqhttpMessageEvent, target_id: str | int | None = None
     ):
         sender_id = event.get_sender_id()
+        sender_name = event.get_sender_name()
         if sender_id not in self.servicers_id:
             return
 
@@ -95,7 +98,9 @@ class HumanServicePlugin(Star):
 
         await self.send(
             event,
-            message="客服👤已接入",
+            message=(
+                f"超级管理员👤:{sender_name}\n已接入对话⚠️⚠️⚠️\n(请用简洁的话描述所遇到的问题)"
+            ),
             group_id=session["group_id"],
             user_id=target_id,
         )
@@ -105,6 +110,7 @@ class HumanServicePlugin(Star):
     @filter.command("结束对话")
     async def end_conversation(self, event: AiocqhttpMessageEvent):
         sender_id = event.get_sender_id()
+        send_name = event.get_sender_name()
         if sender_id not in self.servicers_id:
             return
 
@@ -112,12 +118,12 @@ class HumanServicePlugin(Star):
             if session["servicer_id"] == sender_id:
                 await self.send(
                     event,
-                    message="客服👤已结束对话",
+                    message="超级管理员👤已结束对话",
                     group_id=session["group_id"],
                     user_id=uid,
                 )
                 del self.session_map[uid]
-                yield event.plain_result(f"已结束与用户 {uid} 的对话")
+                yield event.plain_result(f"已结束与用户{send_name}({uid})的对话")
                 return
 
         yield event.plain_result("当前无对话需要结束")
